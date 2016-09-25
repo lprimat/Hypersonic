@@ -19,15 +19,21 @@ class Player {
         int myId = in.nextInt();
         in.nextLine();
         Game game = new Game(width, height);
+        Boolean isExploded = true;
+        Bomb bombToBePlaced = null;
         
         while (true) {
             initTurn(in, game);
             Players myPlayer = game.players.get(myId);
             System.err.println("My Player is : "+ myPlayer.id);
-            Bomb bombToBePlaced = getBestBombPosition(myPlayer, game);
+            if (isExploded) {
+                bombToBePlaced = getBestBombPosition(myPlayer, game);
+                isExploded = false;
+            }
             
             if (bombToBePlaced.posX == myPlayer.posX && bombToBePlaced.posY == myPlayer.posY) {
             	System.out.println("BOMB " + bombToBePlaced.posX + " " + bombToBePlaced.posY);
+            	isExploded = true;
             } else {
             	System.out.println("MOVE " + bombToBePlaced.posX + " " + bombToBePlaced.posY);
             }
@@ -63,7 +69,9 @@ class Player {
     
 	private static Bomb getBestBombPosition(Players myPlayer, Game game) {
 		int maxNbBoxHit = 0;
-		Bomb bombToBePlaced = new Bomb(myPlayer.id, 0, 0, BOMB_TIMER, BOMB_RANGE);
+		int bombinitX = Math.abs(myPlayer.id * 12 - 12);
+		int bombinitY = Math.abs(myPlayer.id * 10 - 10);
+		Bomb bombToBePlaced = new Bomb(myPlayer.id, bombinitX, bombinitY, BOMB_TIMER, BOMB_RANGE);
 		for (int y = 0; y < game.height; y++) {
 			for (int x = 0; x < game.width; x++) {
 				int dist = Math.abs(x - myPlayer.posX) + Math.abs(y - myPlayer.posY);
